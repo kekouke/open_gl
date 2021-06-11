@@ -151,6 +151,7 @@
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="GameEngine.cpp" />
+    <ClCompile Include="Input.cpp" />
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="tests.cpp" />
@@ -164,6 +165,7 @@
     <ClInclude Include="include\vec2.h" />
     <ClInclude Include="include\vec3.h" />
     <ClInclude Include="include\vec4.h" />
+    <ClInclude Include="Input.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

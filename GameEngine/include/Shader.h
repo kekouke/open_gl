@@ -12,13 +12,13 @@
 class Shader {
  public:
   Shader(const std::string vertex_file_path, const std::string fragment_file_path);
-
+  unsigned int ID;
   void Use();
   void SetMat4(std::string name, const glm::mat4& data);
   void SetInt(const std::string& name, int value) const;
 
  private:
-  unsigned int ID;
+
 
   GLuint LoadShaders(const std::string vertex_file_path,
                      const std::string fragment_file_path);

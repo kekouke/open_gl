@@ -2,6 +2,7 @@
 #include <vector>
 #include "vec3.h"
 #include <cassert>
+#include "mat2.h"
 
 class mat3 {
  public:

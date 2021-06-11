@@ -1,6 +1,6 @@
-#include <glm/glm.hpp>
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/gtc/type_ptr.hpp>
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
 
 #include <iostream>
 
@@ -9,13 +9,13 @@
 #define CATCH_CONFIG_MAIN
 #include "../catch2.hpp"
 
-#include "vec2.h"
-#include "vec3.h"
-#include "vec4.h"
+#include "include/vec2.h"
+#include "include/vec3.h"
+#include "include/vec4.h"
 
-#include "mat2.h"
-#include "mat3.h"
-#include "mat4.h"
+#include "include/mat2.h"
+#include "include/mat3.h"
+#include "include/mat4.h"
 
 using namespace std;
 
