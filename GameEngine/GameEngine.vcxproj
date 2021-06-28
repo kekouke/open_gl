@@ -156,6 +156,9 @@
     <ClCompile Include="Shader.cpp" />
     <ClCompile Include="stb_image.cpp" />
     <ClCompile Include="tests.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VertexAttributeObject.cpp" />
+    <ClCompile Include="VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h" />
@@ -169,6 +172,9 @@
     <ClInclude Include="include\vec4.h" />
     <ClInclude Include="Input.h" />
     <ClInclude Include="stb_image.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="VertexAttributeObject.h" />
+    <ClInclude Include="VertexBufferObject.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

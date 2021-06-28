@@ -10,6 +10,9 @@
 #include "include/Shader.h"
 #include "stb_image.h"
 #include "Game.h"
+#include "Texture.h"
+#include "VertexBufferObject.h"
+#include "VertexAttributeObject.h"
 
 bool mouseFirst = true;
 GLfloat yaw = 0.0f;
@@ -48,8 +51,8 @@ int main() {
   }
 
   Shader myShader("res/shaders/e4.vs", "res/shaders/e4.fs");
-
   Camera camera(glm::vec3(0, 0, 1), glm::radians(70.0f));
+  Texture texture("res/imgs/1.jpg");
 
   float vertices[] = {-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, -0.5f, 0.5f,
                       0.0f,  0.0f,  1.0f,  0.5f, 0.5f, 0.0f,  1.0f,
@@ -57,49 +60,19 @@ int main() {
 
   unsigned int indices[] = {0, 1, 3, 1, 2, 3};
 
-  unsigned int VBO, VAO, EBO;
-  glGenVertexArrays(1, &VAO);
-  glBindVertexArray(VAO);
-
-  glGenBuffers(1, &VBO);
-  glBindBuffer(GL_ARRAY_BUFFER, VBO);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+  unsigned int EBO;
+  VertexAttributeObject VAO;
+  VertexBufferObject VBO(vertices, sizeof(vertices) / sizeof(float));
 
   glGenBuffers(1, &EBO);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
                GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
+  VAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
+  VAO.EnableVertexAttribArray(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-  glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float),
-                        (void*)(3 * sizeof(float)));
-  glEnableVertexAttribArray(1);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);
-  glBindVertexArray(0);
-
-  unsigned int texture;
-  glGenTextures(1, &texture);
-  glBindTexture(GL_TEXTURE_2D, texture);
-
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-  glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-  int width, height, nrChannels;
-  stbi_set_flip_vertically_on_load(true);
-
-  unsigned char* data =
-      stbi_load("res/imgs/1.jpg", &width, &height, &nrChannels, 0);
-  if (data) {
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB,
-                 GL_UNSIGNED_BYTE, data);
-    glGenerateMipmap(GL_TEXTURE_2D);
-  } else {
-    std::cout << "Failed to load texture" << std::endl;
-  }
-  stbi_image_free(data);
+  VAO.Bind();
 
   float cameraSpeed = 0.03f;
 
@@ -141,11 +114,11 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glBindTexture(GL_TEXTURE_2D, texture);
-
+    
+    texture.Bind();
     myShader.Use();
 
-    glBindVertexArray(VAO);
+    VAO.Bind();
 
     glm::mat4 model = glm::mat4(1.0f);
 

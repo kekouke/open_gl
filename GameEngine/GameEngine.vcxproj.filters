@@ -14,6 +14,9 @@
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp" />
+    <ClCompile Include="Texture.cpp" />
+    <ClCompile Include="VertexAttributeObject.cpp" />
+    <ClCompile Include="VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h" />
@@ -45,6 +48,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="Game.h" />
+    <ClInclude Include="Texture.h" />
+    <ClInclude Include="VertexAttributeObject.h" />
+    <ClInclude Include="VertexBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Файлы заголовков">
