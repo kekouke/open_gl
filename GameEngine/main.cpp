@@ -1,9 +1,6 @@
 ﻿#pragma once
 
 #include <GL/glew.h>
-
-#include <SFML/Graphics.hpp>
-#include <SFML/Window.hpp>
 #include <iostream>
 
 #include "glm/gtc/matrix_transform.hpp"
@@ -12,6 +9,15 @@
 #include "include/Camera.h"
 #include "include/Shader.h"
 #include "stb_image.h"
+#include "Game.h"
+
+bool mouseFirst = true;
+GLfloat yaw = 0.0f;
+GLfloat pitch = 0.0f;
+GLfloat lastX = 800 / 2.0;
+GLfloat lastY = 600 / 2.0;
+
+void mouse_callback(float, float);
 
 int main() {
   sf::ContextSettings settings;
@@ -23,10 +29,16 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(800, 600, 32), "First Window",
                           sf::Style::Titlebar | sf::Style::Close);
+  //Game game;
 
-//  window.setMouseCursorVisible(false);
+  //while (game.is_running()) {
+  //  game.update();
+  //  game.draw();
+  //}
 
-//  window.setMouseCursorGrabbed(true);
+   //window.setMouseCursorVisible(false);
+
+   //window.setMouseCursorGrabbed(true);
 
   glewExperimental = GL_TRUE;
 
@@ -37,7 +49,7 @@ int main() {
 
   Shader myShader("res/shaders/e4.vs", "res/shaders/e4.fs");
 
-  Camera camera;
+  Camera camera(glm::vec3(0, 0, 1), glm::radians(70.0f));
 
   float vertices[] = {-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, -0.5f, 0.5f,
                       0.0f,  0.0f,  1.0f,  0.5f, 0.5f, 0.0f,  1.0f,
@@ -89,11 +101,18 @@ int main() {
   }
   stbi_image_free(data);
 
-  float cameraSpeed = 0.5f;
+  float cameraSpeed = 0.03f;
 
   bool isGo = true;
   while (isGo) {
     sf::Event windowEvent;
+
+    auto mousePos = sf::Mouse::getPosition();
+
+    mouse_callback(mousePos.x, mousePos.y);
+
+    camera.rotate(glm::radians(pitch), -glm::radians(yaw), 0);
+
     while (window.pollEvent(windowEvent)) {
       switch (windowEvent.type) {
         case sf::Event::Closed:
@@ -101,24 +120,18 @@ int main() {
           break;
         case sf::Event::KeyPressed:
           if (windowEvent.key.code == sf::Keyboard::W) {
-            auto pos_add = camera.GetFront() * cameraSpeed;
-            camera.SetPosition(camera.GetPosition() + pos_add);
+            camera.translate(camera.getFront() * 0.16f);
           }
-
           if (windowEvent.key.code == sf::Keyboard::S) {
-            auto pos_add = camera.GetFront() * cameraSpeed;
-            camera.SetPosition(camera.GetPosition() - pos_add);
+            camera.translate(-camera.getFront() * 0.16f);
           }
-
           if (windowEvent.key.code == sf::Keyboard::A) {
-            auto pos_add = glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * cameraSpeed;
-            camera.SetPosition(camera.GetPosition() - pos_add);
+            camera.translate(-glm::normalize(glm::cross(camera.getFront(), camera.getUp())) * cameraSpeed);
+          }
+          if (windowEvent.key.code == sf::Keyboard::D) {
+            camera.translate(glm::normalize(glm::cross(camera.getFront(), camera.getUp())) * cameraSpeed);
           }
 
-          if (windowEvent.key.code == sf::Keyboard::D) {
-            auto pos_add = glm::normalize(glm::cross(camera.GetFront(), camera.GetUp())) * cameraSpeed;
-            camera.SetPosition(camera.GetPosition() + pos_add);
-          }
           break;
         default:
           break;
@@ -135,8 +148,9 @@ int main() {
     glBindVertexArray(VAO);
 
     glm::mat4 model = glm::mat4(1.0f);
-    auto view = camera.GetViewMatrix();
-    auto prj = camera.GetProjectionMatrix();
+
+    auto view = camera.getView();
+    auto prj = camera.getProjection();
 
     myShader.SetMat4("model", model);
     myShader.SetMat4("view", view);
@@ -148,5 +162,32 @@ int main() {
   }
 
   window.close();
+
   return 0;
+}
+
+void mouse_callback(float xPos, float yPos) { 
+  if (mouseFirst) {
+    lastX = xPos;
+    lastY = yPos;
+    mouseFirst = false;
+  }
+
+  
+  float xoffset = xPos - lastX;
+  float yoffset = lastY - yPos; 
+
+  lastX = xPos;
+  lastY = yPos;
+
+  const float sensitivity = 0.3f;
+  xoffset *= sensitivity;
+  yoffset *= sensitivity;
+
+  yaw += xoffset;
+  pitch += yoffset;
+
+  if (pitch > 70.0f) pitch = 70.0f;
+  if (pitch < -70.0f) pitch = -70.0f;
+
 }

@@ -2,18 +2,18 @@
 
 Shader::Shader(const std::string vertex_file_path,
                const std::string fragment_file_path) {
-  ID = LoadShaders(vertex_file_path, fragment_file_path);
+  id_ = LoadShaders(vertex_file_path, fragment_file_path);
 }
 
-void Shader::Use() { glUseProgram(ID); }
+void Shader::Use() { glUseProgram(id_); }
 
 void Shader::SetMat4(std::string name, const glm::mat4& data) {
-  int location = glGetUniformLocation(ID, name.c_str());
+  int location = glGetUniformLocation(id_, name.c_str());
   glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]);
 }
 
 void Shader::SetInt(const std::string& name, int value) const {
-  glUniform1i(glGetUniformLocation(ID, name.c_str()), value);
+  glUniform1i(glGetUniformLocation(id_, name.c_str()), value);
 }
 
 GLuint Shader::LoadShaders(const std::string vertex_file_path,

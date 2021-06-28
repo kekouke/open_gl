@@ -1,39 +1,37 @@
 #include "include/Camera.h"
 
-Camera::Camera() {
-  cameraPos = glm::vec3(0.0f, 0.0f, 1.0f);
-  cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
-  cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
-  m_viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront,
-                  cameraUp);
-
-  m_projectionMatrix =
-      glm::perspective<float>(glm::radians(90.f), 800.0f / 600.0f, 0.1f, 100.0f);
+Camera::Camera(glm::vec3 position, float fov)
+    : position(position), fov(fov), rotation(1.0f) {
+  updateVectors();
 }
 
-glm::vec3 Camera::GetPosition() const { return cameraPos; }
-
-void Camera::SetPosition(glm::vec3 position) { 
-  cameraPos = position;
-  m_viewMatrix = glm::lookAt(cameraPos, cameraFront, cameraUp);
+glm::mat4 Camera::getProjection() { 
+  return glm::perspective(fov, 800.0f / 600.0f, 0.1f, 100.0f); // TODO
 }
 
-glm::vec3 Camera::GetUp() const { return cameraUp; }
-
-glm::vec3 Camera::GetFront() const { return cameraFront; }
-
-
-
-const glm::mat4& Camera::GetProjectionMatrix() const {
-  return m_projectionMatrix;
+glm::mat4 Camera::getView() { 
+  return glm::lookAt(position, position + front, up);
 }
 
-const glm::mat4& Camera::GetViewMatrix() const {
-  return m_viewMatrix;
+glm::vec3 Camera::getFront() const { return front; }
+
+glm::vec3 Camera::getUp() const { return up; }
+
+void Camera::rotate(float x, float y, float z) {
+  this->rotation = glm::mat4(1.0f);
+
+  rotation = glm::rotate(rotation, z, glm::vec3(0, 0, 1));
+  rotation = glm::rotate(rotation, y, glm::vec3(0, 1, 0));
+  rotation = glm::rotate(rotation, x, glm::vec3(1, 0, 0));
+
+  updateVectors();
 }
 
-void Camera::Move(glm::vec3 move) {
-  cameraPos += move;
-  m_viewMatrix = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+void Camera::translate(glm::vec3 position) { this->position += position; }
+
+void Camera::updateVectors() {
+  front = glm::vec3(rotation * glm::vec4(0, 0, -1, 1));
+  up = glm::vec3(rotation * glm::vec4(0, 1, 0, 1));
+  right = glm::vec3(rotation * glm::vec4(-1, 0, 0, 1));
 }
