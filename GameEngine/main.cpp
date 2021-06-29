@@ -20,6 +20,8 @@ GLfloat pitch = 0.0f;
 GLfloat lastX = 800 / 2.0;
 GLfloat lastY = 600 / 2.0;
 
+glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
+
 void mouse_callback(float, float);
 
 int main() {
@@ -50,29 +52,42 @@ int main() {
     return -1;
   }
 
-  Shader myShader("res/shaders/e4.vs", "res/shaders/e4.fs");
+  Shader lampShader("res/shaders/lamp.vs", "res/shaders/lamp.fs");
+  Shader cubeShader("res/shaders/e4.vs", "res/shaders/e4.fs");
+
   Camera camera(glm::vec3(0, 0, 1), glm::radians(70.0f));
   Texture texture("res/imgs/1.jpg");
 
-  float vertices[] = {-0.5f, -0.5f, 0.0f,  0.0f, 0.0f, -0.5f, 0.5f,
-                      0.0f,  0.0f,  1.0f,  0.5f, 0.5f, 0.0f,  1.0f,
-                      1.0f,  0.5f,  -0.5f, 0.0f, 1.0f, 0.0f};
+float vertices[] = {
+      -0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f,  0.5f,  -0.5f,
+      0.5f,  0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f, -0.5f,
 
-  unsigned int indices[] = {0, 1, 3, 1, 2, 3};
+      -0.5f, -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  0.5f,  0.5f,
+      0.5f,  0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  -0.5f, -0.5f, 0.5f,
 
-  unsigned int EBO;
-  VertexAttributeObject VAO;
+      -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f, -0.5f,
+      -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, 0.5f,  0.5f,
+
+      0.5f,  0.5f,  0.5f,  0.5f,  0.5f,  -0.5f, 0.5f,  -0.5f, -0.5f,
+      0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, 0.5f,  0.5f,  0.5f,  0.5f,
+
+      -0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, 0.5f,
+      0.5f,  -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f,
+
+      -0.5f, 0.5f,  -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  0.5f,
+      0.5f,  0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  -0.5f,
+  };
+
+  VertexAttributeObject cubeVAO;
   VertexBufferObject VBO(vertices, sizeof(vertices) / sizeof(float));
 
-  glGenBuffers(1, &EBO);
-  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-  glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices,
-               GL_STATIC_DRAW);
+  cubeVAO.Bind();
+  cubeVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  //cubeVAO.EnableVertexAttribArray(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 
-  VAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-  VAO.EnableVertexAttribArray(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-
-  VAO.Bind();
+  VertexAttributeObject lightVAO;
+  lightVAO.Bind();
+  lightVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
 
   float cameraSpeed = 0.03f;
 
@@ -114,22 +129,35 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    
-    texture.Bind();
-    myShader.Use();
-
-    VAO.Bind();
+    cubeShader.Use();
+    cubeShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
+    cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+   
 
     glm::mat4 model = glm::mat4(1.0f);
-
     auto view = camera.getView();
     auto prj = camera.getProjection();
 
-    myShader.SetMat4("model", model);
-    myShader.SetMat4("view", view);
-    myShader.SetMat4("projection", prj);
+    lampShader.SetMat4("model", model);
+    lampShader.SetMat4("view", view);
+    lampShader.SetMat4("projection", prj);
 
-    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+    cubeVAO.Bind();
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+
+
+    lampShader.Use();
+    lampShader.SetMat4("projection", prj);
+    lampShader.SetMat4("view", view);
+    model = glm::mat4(1.0f);
+    model = glm::translate(model, lightPos);
+    model = glm::scale(model, glm::vec3(0.2f));  // куб меньшего размера
+    lampShader.SetMat4("model", model);
+
+    lightVAO.Bind();
+
+    glDrawArrays(GL_TRIANGLES, 0, 36);
 
     window.display();
   }

@@ -16,6 +16,13 @@ void Shader::SetInt(const std::string& name, int value) const {
   glUniform1i(glGetUniformLocation(id_, name.c_str()), value);
 }
 
+void Shader::SetVec3(const std::string& name, const glm::vec3& value) const {
+  glUniform3fv(glGetUniformLocation(id_, name.c_str()), 1, &value[0]);
+}
+void Shader::SetVec3(const std::string& name, float x, float y, float z) const {
+  glUniform3f(glGetUniformLocation(id_, name.c_str()), x, y, z);
+}
+
 GLuint Shader::LoadShaders(const std::string vertex_file_path,
                            const std::string fragment_file_path) {
   // Create the shaders
