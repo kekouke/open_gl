@@ -34,6 +34,7 @@ int main() {
 
   sf::RenderWindow window(sf::VideoMode(800, 600, 32), "First Window",
                           sf::Style::Titlebar | sf::Style::Close);
+
   //Game game;
 
   //while (game.is_running()) {
@@ -55,39 +56,62 @@ int main() {
   Shader lampShader("res/shaders/lamp.vs", "res/shaders/lamp.fs");
   Shader cubeShader("res/shaders/e4.vs", "res/shaders/e4.fs");
 
-  Camera camera(glm::vec3(0, 0, 1), glm::radians(70.0f));
-  Texture texture("res/imgs/1.jpg");
+  Camera camera(glm::vec3(0, 0, 3), glm::radians(70.0f));
 
 float vertices[] = {
-      -0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f,  0.5f,  -0.5f,
-      0.5f,  0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f, -0.5f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+      0.5f,  -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
 
-      -0.5f, -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  0.5f,  0.5f,
-      0.5f,  0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  -0.5f, -0.5f, 0.5f,
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f,  -0.5f, 0.5f, 0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
+      -0.5f, 0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
+      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
 
-      -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f, -0.5f,
-      -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, 0.5f,  0.5f,
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+      -0.5f, 0.5f,  -0.5f, -1.0f, 0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
+      -0.5f, -0.5f, 0.5f, -1.0f, 0.0f,  0.0f,
+      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
 
-      0.5f,  0.5f,  0.5f,  0.5f,  0.5f,  -0.5f, 0.5f,  -0.5f, -0.5f,
-      0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, 0.5f,  0.5f,  0.5f,  0.5f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,  0.0f,
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
+      0.5f,  -0.5f, 0.5f, 1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-      -0.5f, -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, 0.5f,
-      0.5f,  -0.5f, 0.5f,  -0.5f, -0.5f, 0.5f,  -0.5f, -0.5f, -0.5f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
+      0.5f,  -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
+      -0.5f, -0.5f, 0.5f, 0.0f,  -1.0f, 0.0f,
+      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
 
-      -0.5f, 0.5f,  -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  0.5f,
-      0.5f,  0.5f,  0.5f,  -0.5f, 0.5f,  0.5f,  -0.5f, 0.5f,  -0.5f,
-  };
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      -0.5f, 0.5f,  0.5f, 0.0f,  1.0f,  0.0f,
+      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f};
 
   VertexAttributeObject cubeVAO;
   VertexBufferObject VBO(vertices, sizeof(vertices) / sizeof(float));
 
   cubeVAO.Bind();
-  cubeVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  //cubeVAO.EnableVertexAttribArray(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
+  cubeVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  cubeVAO.EnableVertexAttribArray(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
 
   VertexAttributeObject lightVAO;
   lightVAO.Bind();
-  lightVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  VBO.Bind();
+  lightVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 
   float cameraSpeed = 0.03f;
 
@@ -108,10 +132,10 @@ float vertices[] = {
           break;
         case sf::Event::KeyPressed:
           if (windowEvent.key.code == sf::Keyboard::W) {
-            camera.translate(camera.getFront() * 0.16f);
+            camera.translate(camera.getFront() * cameraSpeed);
           }
           if (windowEvent.key.code == sf::Keyboard::S) {
-            camera.translate(-camera.getFront() * 0.16f);
+            camera.translate(-camera.getFront() * cameraSpeed);
           }
           if (windowEvent.key.code == sf::Keyboard::A) {
             camera.translate(-glm::normalize(glm::cross(camera.getFront(), camera.getUp())) * cameraSpeed);
@@ -119,28 +143,28 @@ float vertices[] = {
           if (windowEvent.key.code == sf::Keyboard::D) {
             camera.translate(glm::normalize(glm::cross(camera.getFront(), camera.getUp())) * cameraSpeed);
           }
-
           break;
         default:
           break;
       }
     }
-
+    glEnable(GL_DEPTH_TEST);
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     cubeShader.Use();
     cubeShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
     cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetVec3("lightPos", lightPos);
    
 
     glm::mat4 model = glm::mat4(1.0f);
     auto view = camera.getView();
     auto prj = camera.getProjection();
 
-    lampShader.SetMat4("model", model);
-    lampShader.SetMat4("view", view);
-    lampShader.SetMat4("projection", prj);
+    cubeShader.SetMat4("model", model);
+    cubeShader.SetMat4("view", view);
+    cubeShader.SetMat4("projection", prj);
 
     cubeVAO.Bind();
 
@@ -152,7 +176,7 @@ float vertices[] = {
     lampShader.SetMat4("view", view);
     model = glm::mat4(1.0f);
     model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f));  // куб меньшего размера
+    model = glm::scale(model, glm::vec3(0.2f));
     lampShader.SetMat4("model", model);
 
     lightVAO.Bind();
