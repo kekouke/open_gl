@@ -18,6 +18,8 @@ glm::vec3 Camera::getFront() const { return front; }
 
 glm::vec3 Camera::getUp() const { return up; }
 
+glm::vec3 Camera::getPosition() const { return position; }
+
 void Camera::rotate(float x, float y, float z) {
   this->rotation = glm::mat4(1.0f);
 

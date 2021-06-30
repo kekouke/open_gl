@@ -33,7 +33,7 @@ int main() {
   settings.attributeFlags = sf::ContextSettings::Core;
 
   sf::RenderWindow window(sf::VideoMode(800, 600, 32), "First Window",
-                          sf::Style::Titlebar | sf::Style::Close);
+                          sf::Style::Titlebar | sf::Style::Close, settings);
 
   //Game game;
 
@@ -47,6 +47,7 @@ int main() {
    //window.setMouseCursorGrabbed(true);
 
   glewExperimental = GL_TRUE;
+  glEnable(GL_DEPTH_TEST);
 
   if (GLEW_OK != glewInit()) {
     std::cout << "Error:: glew not init =(" << std::endl;
@@ -148,7 +149,8 @@ float vertices[] = {
           break;
       }
     }
-    glEnable(GL_DEPTH_TEST);
+
+
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -156,6 +158,7 @@ float vertices[] = {
     cubeShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
     cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
     cubeShader.SetVec3("lightPos", lightPos);
+    cubeShader.SetVec3("viewPos", camera.getPosition());
    
 
     glm::mat4 model = glm::mat4(1.0f);

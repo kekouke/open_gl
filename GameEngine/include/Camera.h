@@ -12,6 +12,7 @@ class Camera {
   glm::mat4 getView();
   glm::vec3 getFront() const;
   glm::vec3 getUp() const;
+  glm::vec3 getPosition() const;
   void rotate(float x, float y, float z);
   void translate(glm::vec3 position);
 
