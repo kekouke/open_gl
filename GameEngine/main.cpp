@@ -3,6 +3,8 @@
 #include <GL/glew.h>
 #include <iostream>
 
+#include <cmath>
+
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/mat4x4.hpp"
 #include "glm/vec3.hpp"
@@ -56,66 +58,100 @@ int main() {
 
   Shader lampShader("res/shaders/lamp.vs", "res/shaders/lamp.fs");
   Shader cubeShader("res/shaders/e4.vs", "res/shaders/e4.fs");
+  Texture texture("res/imgs/wooden_container.png");
+  Texture texture2("res/imgs/container_2_specular.png");
 
   Camera camera(glm::vec3(0, 0, 3), glm::radians(70.0f));
 
 float vertices[] = {
-      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
-      0.5f,  -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
-      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
-      0.5f,  0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
-      -0.5f, 0.5f,  -0.5f, 0.0f,  0.0f,  -1.0f,
-      -0.5f, -0.5f, -0.5f, 0.0f,  0.0f,  -1.0f,
+     // координаты        // нормали           // текстурные координаты
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  1.0f, 1.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,  0.0f, 0.0f,
+ 
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   1.0f, 1.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,   0.0f, 0.0f,
+ 
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+ 
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  0.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,  1.0f, 0.0f,
+ 
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 1.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,  0.0f, 1.0f,
+ 
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f,
+     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 1.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  1.0f, 0.0f,
+    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f,
+    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
+};
 
-      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
-      0.5f,  -0.5f, 0.5f, 0.0f,  0.0f,  1.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  0.0f,  1.0f,
-      -0.5f, 0.5f,  0.5f, 0.0f,  0.0f,  1.0f,
-      -0.5f, -0.5f, 0.5f,  0.0f,  0.0f,  1.0f,
 
-      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
-      -0.5f, 0.5f,  -0.5f, -1.0f, 0.0f,  0.0f,
-      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
-      -0.5f, -0.5f, -0.5f, -1.0f, 0.0f,  0.0f,
-      -0.5f, -0.5f, 0.5f, -1.0f, 0.0f,  0.0f,
-      -0.5f, 0.5f,  0.5f,  -1.0f, 0.0f,  0.0f,
+  glm::vec3 cubePositions[] = 
+  {
+    glm::vec3(0.0f, 0.0f, 0.0f),
+    glm::vec3(2.0f, 5.0f, -15.0f),
+    glm::vec3(-1.5f, -2.2f, -2.5f),
+    glm::vec3(-3.8f, -2.0f, -12.3f),
+    glm::vec3(2.4f, -0.4f, -3.5f),
+    glm::vec3(-1.7f, 3.0f, -7.5f),
+    glm::vec3(1.3f, -2.0f, -2.5f),
+    glm::vec3(1.5f, 2.0f, -2.5f),
+    glm::vec3(1.5f, 0.2f, -1.5f),
+    glm::vec3(-1.3f, 1.0f, -1.5f)
+  };
 
-      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-      0.5f,  0.5f,  -0.5f, 1.0f,  0.0f,  0.0f,
-      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
-      0.5f,  -0.5f, -0.5f, 1.0f,  0.0f,  0.0f,
-      0.5f,  -0.5f, 0.5f, 1.0f,  0.0f,  0.0f,
-      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-
-      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
-      0.5f,  -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
-      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
-      0.5f,  -0.5f, 0.5f,  0.0f,  -1.0f, 0.0f,
-      -0.5f, -0.5f, 0.5f, 0.0f,  -1.0f, 0.0f,
-      -0.5f, -0.5f, -0.5f, 0.0f,  -1.0f, 0.0f,
-
-      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,
-      0.5f,  0.5f,  -0.5f, 0.0f,  1.0f,  0.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-      -0.5f, 0.5f,  0.5f, 0.0f,  1.0f,  0.0f,
-      -0.5f, 0.5f,  -0.5f, 0.0f,  1.0f,  0.0f};
+  
+  glm::vec3 pointLightPositions[] = {
+      glm::vec3(0.7f, 0.2f, 2.0f),
+      glm::vec3(2.3f, -3.3f, -4.0f),
+      glm::vec3(-4.0f, 2.0f, -12.0f),
+      glm::vec3(0.0f, 0.0f, -3.0f)
+  };  
 
   VertexAttributeObject cubeVAO;
   VertexBufferObject VBO(vertices, sizeof(vertices) / sizeof(float));
 
   cubeVAO.Bind();
-  cubeVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
-  cubeVAO.EnableVertexAttribArray(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+  cubeVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+  cubeVAO.EnableVertexAttribArray(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+  cubeVAO.EnableVertexAttribArray(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
 
   VertexAttributeObject lightVAO;
   lightVAO.Bind();
   VBO.Bind();
-  lightVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+  lightVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 
-  float cameraSpeed = 0.03f;
+  float cameraSpeed = 0.1f;
 
+
+  cubeShader.Use();
+  cubeShader.SetInt("material.diffuse", 0);
+  cubeShader.SetInt("material.specular", 1);
+
+  sf::Clock clock;
   bool isGo = true;
   while (isGo) {
     sf::Event windowEvent;
@@ -154,37 +190,95 @@ float vertices[] = {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+    auto ticks = clock.getElapsedTime().asSeconds();
+    
     cubeShader.Use();
-    cubeShader.SetVec3("objectColor", 1.0f, 0.5f, 0.31f);
-    cubeShader.SetVec3("lightColor", 1.0f, 1.0f, 1.0f);
-    cubeShader.SetVec3("lightPos", lightPos);
     cubeShader.SetVec3("viewPos", camera.getPosition());
-   
+    cubeShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
+    cubeShader.SetFloat("material.shininess", 64.0f);
 
-    glm::mat4 model = glm::mat4(1.0f);
+// Направленный свет
+    cubeShader.SetVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
+    cubeShader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.SetVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
+    cubeShader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
+
+    // Точечный источник света №1
+    cubeShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
+    cubeShader.SetVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.SetVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.SetVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetFloat("pointLights[0].constant", 1.0f);
+    cubeShader.SetFloat("pointLights[0].linear", 0.09);
+    cubeShader.SetFloat("pointLights[0].quadratic", 0.032);
+
+    // Точечный источник света №2
+    cubeShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
+    cubeShader.SetVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.SetVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.SetVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetFloat("pointLights[1].constant", 1.0f);
+    cubeShader.SetFloat("pointLights[1].linear", 0.09);
+    cubeShader.SetFloat("pointLights[1].quadratic", 0.032);
+
+    // Точечный источник света №3
+    cubeShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
+    cubeShader.SetVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.SetVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.SetVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetFloat("pointLights[2].constant", 1.0f);
+    cubeShader.SetFloat("pointLights[2].linear", 0.09);
+    cubeShader.SetFloat("pointLights[2].quadratic", 0.032);
+
+    // Точечный источник света №4
+    cubeShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
+    cubeShader.SetVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
+    cubeShader.SetVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
+    cubeShader.SetVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetFloat("pointLights[3].constant", 1.0f);
+    cubeShader.SetFloat("pointLights[3].linear", 0.09);
+    cubeShader.SetFloat("pointLights[3].quadratic", 0.032);   
+
     auto view = camera.getView();
     auto prj = camera.getProjection();
 
-    cubeShader.SetMat4("model", model);
     cubeShader.SetMat4("view", view);
     cubeShader.SetMat4("projection", prj);
 
+    // TODO : Fix texture class (kekouke)
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
+
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2.getTextureId());
+
     cubeVAO.Bind();
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    for (unsigned int i = 0; i < 10; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, cubePositions[i]);
+      float angle = 20.0f * i;
+      model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+      cubeShader.SetMat4("model", model);
+
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
 
     lampShader.Use();
     lampShader.SetMat4("projection", prj);
     lampShader.SetMat4("view", view);
-    model = glm::mat4(1.0f);
-    model = glm::translate(model, lightPos);
-    model = glm::scale(model, glm::vec3(0.2f));
-    lampShader.SetMat4("model", model);
 
-    lightVAO.Bind();
+    for (int i = 0; i < 4; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, pointLightPositions[i]);
+      model = glm::scale(model, glm::vec3(0.2f));
+      lampShader.SetMat4("model", model);
 
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+      lightVAO.Bind();
+
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+    }
 
     window.display();
   }
