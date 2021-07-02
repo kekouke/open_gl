@@ -37,17 +37,6 @@ int main() {
   sf::RenderWindow window(sf::VideoMode(800, 600, 32), "First Window",
                           sf::Style::Titlebar | sf::Style::Close, settings);
 
-  //Game game;
-
-  //while (game.is_running()) {
-  //  game.update();
-  //  game.draw();
-  //}
-
-   //window.setMouseCursorVisible(false);
-
-   //window.setMouseCursorGrabbed(true);
-
   glewExperimental = GL_TRUE;
   glEnable(GL_DEPTH_TEST);
 
@@ -187,7 +176,7 @@ float vertices[] = {
     }
 
 
-    glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+    glClearColor(0, 0, 0, 0); // 0.2f, 0.3f, 0.3f, 1.0f
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     auto ticks = clock.getElapsedTime().asSeconds();
@@ -197,47 +186,38 @@ float vertices[] = {
     cubeShader.SetVec3("material.specular", 0.5f, 0.5f, 0.5f);
     cubeShader.SetFloat("material.shininess", 64.0f);
 
-// Направленный свет
+    // Направленный свет
     cubeShader.SetVec3("dirLight.direction", -0.2f, -1.0f, -0.3f);
     cubeShader.SetVec3("dirLight.ambient", 0.05f, 0.05f, 0.05f);
     cubeShader.SetVec3("dirLight.diffuse", 0.4f, 0.4f, 0.4f);
     cubeShader.SetVec3("dirLight.specular", 0.5f, 0.5f, 0.5f);
 
-    // Точечный источник света №1
-    cubeShader.SetVec3("pointLights[0].position", pointLightPositions[0]);
-    cubeShader.SetVec3("pointLights[0].ambient", 0.05f, 0.05f, 0.05f);
-    cubeShader.SetVec3("pointLights[0].diffuse", 0.8f, 0.8f, 0.8f);
-    cubeShader.SetVec3("pointLights[0].specular", 1.0f, 1.0f, 1.0f);
-    cubeShader.SetFloat("pointLights[0].constant", 1.0f);
-    cubeShader.SetFloat("pointLights[0].linear", 0.09);
-    cubeShader.SetFloat("pointLights[0].quadratic", 0.032);
+    // Точечный истоник света
+     for (int i = 0; i < 4; i++) {
+      std::stringstream s("pointLights[");
+      s << "pointLights[" << i << "]";
 
-    // Точечный источник света №2
-    cubeShader.SetVec3("pointLights[1].position", pointLightPositions[1]);
-    cubeShader.SetVec3("pointLights[1].ambient", 0.05f, 0.05f, 0.05f);
-    cubeShader.SetVec3("pointLights[1].diffuse", 0.8f, 0.8f, 0.8f);
-    cubeShader.SetVec3("pointLights[1].specular", 1.0f, 1.0f, 1.0f);
-    cubeShader.SetFloat("pointLights[1].constant", 1.0f);
-    cubeShader.SetFloat("pointLights[1].linear", 0.09);
-    cubeShader.SetFloat("pointLights[1].quadratic", 0.032);
+      cubeShader.SetVec3(s.str() + ".position", pointLightPositions[i]);
+      cubeShader.SetVec3(s.str() + ".ambient", 0.05f, 0.05f, 0.05f);
+      cubeShader.SetVec3(s.str() + ".diffuse", 0.8f, 0.8f, 0.8f);
+      cubeShader.SetVec3(s.str() + ".specular", 1.0f, 1.0f, 1.0f);
+      cubeShader.SetFloat(s.str() + ".constant", 1.0f);
+      cubeShader.SetFloat(s.str() + ".linear", 0.09);
+      cubeShader.SetFloat(s.str() + ".quadratic", 0.032);
+    }
 
-    // Точечный источник света №3
-    cubeShader.SetVec3("pointLights[2].position", pointLightPositions[2]);
-    cubeShader.SetVec3("pointLights[2].ambient", 0.05f, 0.05f, 0.05f);
-    cubeShader.SetVec3("pointLights[2].diffuse", 0.8f, 0.8f, 0.8f);
-    cubeShader.SetVec3("pointLights[2].specular", 1.0f, 1.0f, 1.0f);
-    cubeShader.SetFloat("pointLights[2].constant", 1.0f);
-    cubeShader.SetFloat("pointLights[2].linear", 0.09);
-    cubeShader.SetFloat("pointLights[2].quadratic", 0.032);
+     // Фонарик
+    cubeShader.SetVec3("spotLight.position", camera.getPosition());
+    cubeShader.SetVec3("spotLight.direction", camera.getFront());
+    cubeShader.SetVec3("spotLight.ambient", 0.0f, 0.0f, 0.0f);
+    cubeShader.SetVec3("spotLight.diffuse", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetVec3("spotLight.specular", 1.0f, 1.0f, 1.0f);
+    cubeShader.SetFloat("spotLight.constant", 1.0f);
+    cubeShader.SetFloat("spotLight.linear", 0.09);
+    cubeShader.SetFloat("spotLight.quadratic", 0.032);
+    cubeShader.SetFloat("spotLight.cutOff", glm::cos(glm::radians(12.5f)));
+    cubeShader.SetFloat("spotLight.outerCutOff", glm::cos(glm::radians(15.0f)));
 
-    // Точечный источник света №4
-    cubeShader.SetVec3("pointLights[3].position", pointLightPositions[3]);
-    cubeShader.SetVec3("pointLights[3].ambient", 0.05f, 0.05f, 0.05f);
-    cubeShader.SetVec3("pointLights[3].diffuse", 0.8f, 0.8f, 0.8f);
-    cubeShader.SetVec3("pointLights[3].specular", 1.0f, 1.0f, 1.0f);
-    cubeShader.SetFloat("pointLights[3].constant", 1.0f);
-    cubeShader.SetFloat("pointLights[3].linear", 0.09);
-    cubeShader.SetFloat("pointLights[3].quadratic", 0.032);   
 
     auto view = camera.getView();
     auto prj = camera.getProjection();
@@ -245,12 +225,8 @@ float vertices[] = {
     cubeShader.SetMat4("view", view);
     cubeShader.SetMat4("projection", prj);
 
-    // TODO : Fix texture class (kekouke)
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture.getTextureId());
-
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2.getTextureId());
+    texture.Bind(0);
+    texture.Bind(1);
 
     cubeVAO.Bind();
 

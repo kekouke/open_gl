@@ -37,6 +37,11 @@ Texture::Texture(const char* path) {
 
 unsigned int Texture::getTextureId() const { return id; }
 
-void Texture::Bind() {
+void Texture::Bind(int layout) {
+
+  if (layout != -1) {
+    glActiveTexture(GL_TEXTURE0 + layout);
+  }
+
   glBindTexture(GL_TEXTURE_2D, id);
 }
