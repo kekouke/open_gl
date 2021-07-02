@@ -164,6 +164,15 @@ float skyboxVertices[] = {
     glm::vec3(-1.3f, 1.0f, -1.5f)
   };
 
+  glm::vec3 modelPositions[] = {
+    glm::vec3(0.0f, 0.0f, 10.0f),
+    glm::vec3(0.0f, 0.0f, -10.0f),
+    glm::vec3(10.0f, 0.0f, 0.0f),
+    glm::vec3(-10.0f, 0.0f, 0.0f),
+    glm::vec3(0.0f, 10.0f, 0.0f),
+    glm::vec3(0.0f, -10.0f, 0.0f)
+  };
+
   
   glm::vec3 pointLightPositions[] = {
       glm::vec3(0.7f, 0.2f, 2.0f),
@@ -331,13 +340,16 @@ float skyboxVertices[] = {
     lampShader.SetMat4("projection", prj);
     lampShader.SetMat4("view", view);
 
-    glm::mat4 model = glm::mat4(1.0f);
-    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 10.0f));  // смещаем вниз чтобы быть в центре сцены
-    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));  // объект слишком большой для нашей
-                                       // сцены, поэтому немного уменьшим его
-    backpackShader.SetMat4("model", model);
+    for (int i = 0; i < 7; i++) {
+      glm::mat4 model = glm::mat4(1.0f);
+      model = glm::translate(model, modelPositions[i]);
+      model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));
+      backpackShader.SetMat4("model", model);
 
-    backpack.Render(backpackShader);
+      backpack.Render(backpackShader);
+    }
+
+
 
     glDepthFunc(GL_LEQUAL);  // меняем функцию глубины, чтобы обеспечить
                              // прохождение теста глубины, когда значения равны
