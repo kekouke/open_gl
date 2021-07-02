@@ -27,6 +27,7 @@ GLfloat lastY = 600 / 2.0;
 glm::vec3 lightPos(1.2f, 1.0f, 2.0f);
 
 void mouse_callback(float, float);
+unsigned int loadCubemap(std::vector<std::string>);
 
 int main() {
   sf::ContextSettings settings;
@@ -49,6 +50,7 @@ int main() {
 
   Shader lampShader("res/shaders/lamp.vs", "res/shaders/lamp.fs");
   Shader cubeShader("res/shaders/e4.vs", "res/shaders/e4.fs");
+  Shader skyboxShader("res/shaders/skybox.vs", "res/shaders/skybox.fs");
   Texture texture("res/imgs/wooden_container.png");
   Texture texture2("res/imgs/container_2_specular.png");
 
@@ -103,6 +105,50 @@ float vertices[] = {
     -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 1.0f
 };
 
+float skyboxVertices[] = {        
+    -1.0f,  1.0f, -1.0f,
+    -1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f, -1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+
+    -1.0f, -1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f,
+    -1.0f, -1.0f,  1.0f,
+
+    -1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f, -1.0f,
+     1.0f,  1.0f,  1.0f,
+     1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f,  1.0f,
+    -1.0f,  1.0f, -1.0f,
+
+    -1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f, -1.0f,
+     1.0f, -1.0f, -1.0f,
+    -1.0f, -1.0f,  1.0f,
+     1.0f, -1.0f,  1.0f
+};
+
 
   glm::vec3 cubePositions[] = 
   {
@@ -124,7 +170,24 @@ float vertices[] = {
       glm::vec3(2.3f, -3.3f, -4.0f),
       glm::vec3(-4.0f, 2.0f, -12.0f),
       glm::vec3(0.0f, 0.0f, -3.0f)
-  };  
+  }; 
+
+
+  vector<std::string> faces = {
+    "res/imgs/skybox/right.jpg",
+    "res/imgs/skybox/left.jpg",
+    "res/imgs/skybox/top.jpg",
+    "res/imgs/skybox/bottom.jpg",
+    "res/imgs/skybox/front.jpg",
+    "res/imgs/skybox/back.jpg"
+  };
+  unsigned int cubemapTexture = loadCubemap(faces);
+
+  
+  VertexBufferObject skyboxVBO(skyboxVertices, sizeof(skyboxVertices) / sizeof(float));
+  VertexAttributeObject skyboxVAO;
+  skyboxVBO.Bind();
+  skyboxVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
   VertexAttributeObject cubeVAO;
   VertexBufferObject VBO(vertices, sizeof(vertices) / sizeof(float));
@@ -141,10 +204,12 @@ float vertices[] = {
 
   float cameraSpeed = 0.1f;
 
-
   cubeShader.Use();
   cubeShader.SetInt("material.diffuse", 0);
   cubeShader.SetInt("material.specular", 1);
+
+  skyboxShader.Use();
+  skyboxShader.SetInt("skybox", 0);
 
   sf::Clock clock;
   bool isGo = true;
@@ -274,6 +339,24 @@ float vertices[] = {
 
     backpack.Render(backpackShader);
 
+    glDepthFunc(GL_LEQUAL);  // меняем функцию глубины, чтобы обеспечить
+                             // прохождение теста глубины, когда значения равны
+                             // содержимому буфера глубины
+    skyboxShader.Use();
+    view = glm::mat4(glm::mat3(view)); // убираем из матрицы вида секцию,
+                                    // отвечающую за операцию трансляции
+    skyboxShader.SetMat4("view", view);
+    skyboxShader.SetMat4("projection", prj);
+
+    // Куб скайбокса
+    skyboxVAO.Bind();
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
+    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glBindVertexArray(0);
+    glDepthFunc(
+        GL_LESS);  // восстанавливаем стандартное значение функции теста глубины
+
     window.display();
   }
 
@@ -306,4 +389,33 @@ void mouse_callback(float xPos, float yPos) {
   if (pitch > 70.0f) pitch = 70.0f;
   if (pitch < -70.0f) pitch = -70.0f;
 
+}
+
+unsigned int loadCubemap(std::vector<std::string> faces) {
+  stbi_set_flip_vertically_on_load(false);
+  unsigned int textureID;
+  glGenTextures(1, &textureID);
+  glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
+
+  int width, height, nrChannels;
+  for (unsigned int i = 0; i < faces.size(); i++) {
+    unsigned char* data =
+        stbi_load(faces[i].c_str(), &width, &height, &nrChannels, 0);
+    if (data) {
+      glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB, width, height,
+                   0, GL_RGB, GL_UNSIGNED_BYTE, data);
+      stbi_image_free(data);
+    } else {
+      std::cout << "Cubemap texture failed to load at path: " << faces[i]
+                << std::endl;
+      stbi_image_free(data);
+    }
+  }
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+
+  return textureID;
 }
