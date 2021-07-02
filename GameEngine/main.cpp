@@ -16,6 +16,8 @@
 #include "VertexBufferObject.h"
 #include "VertexAttributeObject.h"
 
+#include "Model.h"
+
 bool mouseFirst = true;
 GLfloat yaw = 0.0f;
 GLfloat pitch = 0.0f;
@@ -51,6 +53,10 @@ int main() {
   Texture texture2("res/imgs/container_2_specular.png");
 
   Camera camera(glm::vec3(0, 0, 3), glm::radians(70.0f));
+
+  Shader backpackShader("res/shaders/backpack.vs", "res/shaders/backpack.fs");
+  stbi_set_flip_vertically_on_load(true);
+  Model backpack("C:/Users/Mi/Desktop/Models/backpack.obj");
 
 float vertices[] = {
      // координаты        // нормали           // текстурные координаты
@@ -255,6 +261,18 @@ float vertices[] = {
 
       glDrawArrays(GL_TRIANGLES, 0, 36);
     }
+
+    backpackShader.Use();
+    lampShader.SetMat4("projection", prj);
+    lampShader.SetMat4("view", view);
+
+    glm::mat4 model = glm::mat4(1.0f);
+    model = glm::translate(model, glm::vec3(0.0f, 0.0f, 10.0f));  // смещаем вниз чтобы быть в центре сцены
+    model = glm::scale(model, glm::vec3(1.0f, 1.0f, 1.0f));  // объект слишком большой для нашей
+                                       // сцены, поэтому немного уменьшим его
+    backpackShader.SetMat4("model", model);
+
+    backpack.Render(backpackShader);
 
     window.display();
   }
