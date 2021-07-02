@@ -351,23 +351,18 @@ float skyboxVertices[] = {
 
 
 
-    glDepthFunc(GL_LEQUAL);  // меняем функцию глубины, чтобы обеспечить
-                             // прохождение теста глубины, когда значения равны
-                             // содержимому буфера глубины
+    glDepthFunc(GL_LEQUAL);
     skyboxShader.Use();
-    view = glm::mat4(glm::mat3(view)); // убираем из матрицы вида секцию,
-                                    // отвечающую за операцию трансляции
+    view = glm::mat4(glm::mat3(view));
     skyboxShader.SetMat4("view", view);
     skyboxShader.SetMat4("projection", prj);
 
-    // Куб скайбокса
     skyboxVAO.Bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
     glDrawArrays(GL_TRIANGLES, 0, 36);
     glBindVertexArray(0);
-    glDepthFunc(
-        GL_LESS);  // восстанавливаем стандартное значение функции теста глубины
+    glDepthFunc(GL_LESS);
 
     window.display();
   }
