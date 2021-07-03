@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+#include "include/vec4.h"
 
 class vec3 {
  public:
@@ -19,6 +20,12 @@ class vec3 {
     z_ = other.z_;
   }
 
+  vec3(vec4 other) { 
+    x_ = other[0];
+    y_ = other[1];
+    z_ = other[2];
+  }
+
   vec3 operator+(const vec3& other) const {
     return vec3(x_ + other.x_, y_ + other.y_, z_ + other.z_);
   }
@@ -33,6 +40,10 @@ class vec3 {
 
   vec3 operator/(const float& scalar) const {
     return *this * (1 / scalar); 
+  }
+
+  vec3 operator-() const { 
+    return {-x_, -y_, -z_};
   }
 
   bool operator==(const vec3& other) const {

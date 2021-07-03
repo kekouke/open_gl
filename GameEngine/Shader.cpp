@@ -12,6 +12,10 @@ void Shader::SetMat4(std::string name, const glm::mat4& data) {
   glUniformMatrix4fv(location, 1, GL_FALSE, &data[0][0]);
 }
 
+void Shader::SetMat4(const std::string& name, const mat4& data) {
+  SetMat4(name, mat4_to_glm_mat4(data));
+}
+
 void Shader::SetInt(const std::string& name, int value) const {
   glUniform1i(glGetUniformLocation(id_, name.c_str()), value);
 }
@@ -25,6 +29,10 @@ void Shader::SetVec3(const std::string& name, const glm::vec3& value) const {
 }
 void Shader::SetVec3(const std::string& name, float x, float y, float z) const {
   glUniform3f(glGetUniformLocation(id_, name.c_str()), x, y, z);
+}
+
+void Shader::SetVec3(const std::string& name, const vec3& value) const {
+  SetVec3(name, value[0], value[1], value[2]);
 }
 
 GLuint Shader::LoadShaders(const std::string vertex_file_path,
@@ -117,4 +125,13 @@ GLuint Shader::LoadShaders(const std::string vertex_file_path,
   glDeleteShader(FragmentShaderID);
 
   return ProgramID;
+}
+
+glm::mat4 Shader::mat4_to_glm_mat4(const mat4& target) { 
+  return glm::mat4(
+    target[0][0], target[0][1], target[0][2], target[0][3],
+    target[1][0], target[1][1], target[1][2], target[1][3],
+    target[2][0], target[2][1], target[2][2], target[2][3],
+    target[3][0], target[3][1], target[3][2], target[3][3]
+  );
 }

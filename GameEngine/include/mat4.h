@@ -3,8 +3,9 @@
 #include <vector>
 #include "vec4.h"
 #include <cassert>
-#include "vec3.h"
+#include "include/vec3.h"
 #include "mat3.h"
+
 class mat4 {
  public:
   mat4() { matrix = std::vector<vec4>(4, 0); }
@@ -242,6 +243,51 @@ class mat4 {
     rotate_matrix[3][3] = 1;
 
     return rotate_matrix;
+  }
+  
+  static mat4 perspective(float fov, float ratio, float nearVar, float farVar) {
+    float tan_fov = tan(fov / 2.0f);
+    auto a = 1.0f / (ratio * tan_fov);
+
+    mat4 perspective_mat;
+    perspective_mat.get_row(0)[0] = 1.0f / (ratio * tan_fov);
+    perspective_mat.get_row(1)[1] = 1.0f / (tan_fov);
+    perspective_mat.get_row(2)[2] =
+        -(nearVar + farVar) / float(farVar - nearVar);
+    perspective_mat.get_row(2)[3] = -1.0f;
+    perspective_mat.get_row(3)[2] =
+        (2.0f * farVar * nearVar) / (nearVar - farVar);
+
+    return perspective_mat;
+  }
+
+  static mat4 look_at(vec3 position, vec3 direction, vec3 up) {
+    vec3 vec_one(position - direction);
+    vec3 z_axis(vec_one.normalize());
+
+    vec3 vec_up(up.normalize());
+    vec3 vector_product(vec3::cross_product(up, z_axis));
+    vec3 x_axis(vector_product.normalize());
+
+    vec3 y_axis(vec3::cross_product(z_axis, x_axis));
+
+    mat4 rotation(1.0f);
+    rotation[0][0] = x_axis[0];
+    rotation[1][0] = x_axis[1];
+    rotation[2][0] = x_axis[2];
+    rotation[0][1] = y_axis[0];
+    rotation[1][1] = y_axis[1];
+    rotation[2][1] = y_axis[2];
+    rotation[0][2] = z_axis[0];
+    rotation[1][2] = z_axis[1];
+    rotation[2][2] = z_axis[2];
+
+    mat4 translation(1.0f);
+    translation[3][0] = -position[0];
+    translation[3][1] = -position[1];
+    translation[3][2] = -position[2];
+
+    return translation * rotation;
   }
 
   static mat4 scale_matrix(const vec3& scale_vector) {

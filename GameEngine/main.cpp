@@ -54,7 +54,7 @@ int main() {
   Texture texture("res/imgs/wooden_container.png");
   Texture texture2("res/imgs/container_2_specular.png");
 
-  Camera camera(glm::vec3(0, 0, 3), glm::radians(70.0f));
+  Camera camera(vec3(0, 0, 3), glm::radians(70.0f));
 
   Shader backpackShader("res/shaders/backpack.vs", "res/shaders/backpack.fs");
   stbi_set_flip_vertically_on_load(true);
@@ -244,10 +244,10 @@ float skyboxVertices[] = {
             camera.translate(-camera.getFront() * cameraSpeed);
           }
           if (windowEvent.key.code == sf::Keyboard::A) {
-            camera.translate(-glm::normalize(glm::cross(camera.getFront(), camera.getUp())) * cameraSpeed);
+            camera.translate(-vec3::cross_product(camera.getFront(), camera.getUp()).normalize() * cameraSpeed);
           }
           if (windowEvent.key.code == sf::Keyboard::D) {
-            camera.translate(glm::normalize(glm::cross(camera.getFront(), camera.getUp())) * cameraSpeed);
+            camera.translate(vec3::cross_product(camera.getFront(), camera.getUp()).normalize() * cameraSpeed);
           }
           break;
         default:
@@ -353,7 +353,7 @@ float skyboxVertices[] = {
 
     glDepthFunc(GL_LEQUAL);
     skyboxShader.Use();
-    view = glm::mat4(glm::mat3(view));
+    view = camera.get_view_mat3();
     skyboxShader.SetMat4("view", view);
     skyboxShader.SetMat4("projection", prj);
 
