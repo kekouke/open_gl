@@ -94,61 +94,46 @@ int main() {
         -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,  0.0f, 0.0f
   };
 
-float skyboxVertices[] = {        
-    -1.0f,  1.0f, -1.0f,
-    -1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
+	float skyboxVertices[] = {
+		-1.0f, 1.0f, -1.0f,
+		-1.0f, 1.0f, 1.0f,
+		1.0f, 1.0f, -1.0f,
+		1.0f, 1.0f, 1.0f,
 
-    -1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f, -1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
+		-1.0f, -1.0f, -1.0f,
+		-1.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, -1.0f,
+		1.0f, -1.0f, 1.0f,
+	};
 
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-
-    -1.0f, -1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f,
-    -1.0f, -1.0f,  1.0f,
-
-    -1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f, -1.0f,
-     1.0f,  1.0f,  1.0f,
-     1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f,  1.0f,
-    -1.0f,  1.0f, -1.0f,
-
-    -1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f, -1.0f,
-     1.0f, -1.0f, -1.0f,
-    -1.0f, -1.0f,  1.0f,
-     1.0f, -1.0f,  1.0f
+unsigned int cubeIndices[] = {
+  0,  1,  2,  0,  2,  3,
+  4,  5,  6,  4,  6,  7,
+  8,  9,  10, 8,  10, 11,
+  12, 13, 14, 12, 14, 15,
+  16, 17, 18, 16, 18, 19,
+  20, 21, 22, 20, 22, 23
 };
 
-unsigned int cubeIndices[] = {0,  1,  2,  0,  2,  3,
+unsigned int skyboxIndices[] = {
+  	0, 1, 2,
+		1, 2, 3,
 
-                       4,  5,  6,  4,  6,  7,
+		4, 5, 6,
+		5, 6, 7,
 
-                       8,  9,  10, 8,  10, 11,
+		0, 1, 5,
+		0, 4, 5,
 
-                       12, 13, 14, 12, 14, 15,
+		2, 3, 7,
+		2, 6, 7,
 
-                       16, 17, 18, 16, 18, 19,
+		0, 2, 6,
+		0, 4, 6,
 
-                       20, 21, 22, 20, 22, 23};
+		1, 5, 7,
+		1, 3, 7
+};
 
 
   glm::vec3 cubePositions[] = 
@@ -197,6 +182,9 @@ unsigned int cubeIndices[] = {0,  1,  2,  0,  2,  3,
   VertexBufferObject skyboxVBO(skyboxVertices, sizeof(skyboxVertices) / sizeof(float));
   VertexAttributeObject skyboxVAO;
   skyboxVBO.Bind();
+
+  ElementBufferObject skyboxEBO(skyboxIndices, sizeof(skyboxIndices) / sizeof(unsigned int));
+
   skyboxVAO.EnableVertexAttribArray(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
 
   VertexAttributeObject cubeVAO;
@@ -364,7 +352,7 @@ unsigned int cubeIndices[] = {0,  1,  2,  0,  2,  3,
     skyboxVAO.Bind();
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_CUBE_MAP, cubemapTexture);
-    glDrawArrays(GL_TRIANGLES, 0, 36);
+    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)0);
     glBindVertexArray(0);
     glDepthFunc(GL_LESS);
 
