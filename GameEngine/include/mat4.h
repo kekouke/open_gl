@@ -204,45 +204,57 @@ class mat4 {
 
     for (int i = 0; i < 4; i++) {
       for (int j = 0; j < 4; j++) {
-        result.matrix[i][j] = get_algebraic_complement(i, j);
+        result[i][j] = get_algebraic_complement(i, j);
       }
     }
 
     return result;
   }
 
-  static mat4 offset_matrix(vec3 movement) { 
-    return mat4
-    (
-      vec4(1, 0, 0, movement[0]),
-      vec4(0, 1, 0, movement[1]),
-      vec4(0, 0, 1, movement[2]),
-      vec4(0, 0, 0, 1)
-    );
+  mat4 offset_matrix(vec3 vec) { 
+    mat4 result(*this);
+
+    result[3][0] = matrix[0][0] * vec[0] + matrix[1][0] * vec[1] +
+                        matrix[2][0] * vec[2] + matrix[3][0];
+    result[3][1] = matrix[0][1] * vec[0] + matrix[1][1] * vec[1] +
+                        matrix[2][1] * vec[2] + matrix[3][1];
+    result[3][2] = matrix[0][2] * vec[0] + matrix[1][2] * vec[1] +
+                        matrix[2][2] * vec[2] + matrix[3][2];
+    result[3][3] = matrix[0][3] * vec[0] + matrix[1][3] * vec[1] +
+                        matrix[2][3] * vec[2] + matrix[3][3];
+
+    return result;
   }
 
-  static mat4 rotation_matrix(float angle, vec3 vec) {
-    auto param = 1 - cos(angle);
-    float x = vec[0];
-    float y = vec[1];
-    float z = vec[2];
-    mat4 rotate_matrix;
+  mat4 rotate(float angle, const vec3& vec) {
+    float cosAngle = cos(angle);
+    float sinAngle = sin(angle);
 
-    rotate_matrix[0][0] = cos(angle) + param * pow(x, 2);
-    rotate_matrix[0][1] = param * x * y - sin(angle) * z;
-    rotate_matrix[0][2] = param * x * z + sin(angle) * y;
+    vec3 axis(vec.normalize());
+    vec3 sup(axis * (1 - cosAngle));
 
-    rotate_matrix[1][0] = param * y * x + sin(angle) * z;
-    rotate_matrix[1][1] = cos(angle) + param * pow(y, 2);
-    rotate_matrix[1][2] = param * y * z - sin(angle) * x;
+    mat4 rotate;
+    rotate[0][0] = cosAngle + sup[0] * axis[0];
+    rotate[0][1] = sup[0] * axis[1] + sinAngle * axis[2];
+    rotate[0][2] = sup[0] * axis[2] - sinAngle * axis[1];
+    rotate[0][3] = 0;
 
-    rotate_matrix[2][0] = param * z * x - sin(angle) * y;
-    rotate_matrix[2][1] = param * z * y + sin(angle) * x;
-    rotate_matrix[2][2] = cos(angle) + param * pow(z, 2);
+    rotate[1][0] = sup[1] * axis[0] - sinAngle * axis[2];
+    rotate[1][1] = cosAngle + sup[1] * axis[1];
+    rotate[1][2] = sup[1] * axis[2] + sinAngle * axis[0];
+    rotate[1][3] = 0;
 
-    rotate_matrix[3][3] = 1;
+    rotate[2][0] = sup[2] * axis[0] + sinAngle * axis[1];
+    rotate[2][1] = sup[2] * axis[1] - sinAngle * axis[0];
+    rotate[2][2] = cosAngle + sup[2] * axis[2];
+    rotate[2][3] = 0;
 
-    return rotate_matrix;
+    rotate[3][0] = 0;
+    rotate[3][1] = 0;
+    rotate[3][2] = 0;
+    rotate[3][3] = 1;
+
+    return mat4(*this * rotate);
   }
   
   static mat4 perspective(float fov, float ratio, float nearVar, float farVar) {
@@ -333,7 +345,7 @@ class mat4 {
     };
   }
 
-  static mat4 get_identity_matrix() { return {1.0}; }
+  static mat4 get_identity_matrix() { return {1.0f}; }
 
  private:
    std::vector<vec4> matrix;

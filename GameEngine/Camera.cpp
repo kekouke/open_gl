@@ -23,9 +23,9 @@ vec3 Camera::getPosition() const { return position; }
 void Camera::rotate(float x, float y, float z) {
   this->rotation = mat4(1.0f);
 
-  rotation = rotation * mat4::rotation_matrix(z, vec3(0, 0, 1));
-  rotation = rotation * mat4::rotation_matrix(y, vec3(0, 1, 0));
-  rotation = rotation * mat4::rotation_matrix(x, vec3(1, 0, 0));
+  rotation = rotation.rotate(z, vec3(0, 0, -1));
+  rotation = rotation.rotate(y, vec3(0, -1, 0));
+  rotation = rotation.rotate(x, vec3(-1, 0, 0));
 
   updateVectors();
 }

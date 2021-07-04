@@ -27,6 +27,7 @@
     </ClCompile>
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
+    <ClCompile Include="ElementBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h" />
@@ -71,6 +72,7 @@
     </ClInclude>
     <ClInclude Include="Mesh.h" />
     <ClInclude Include="Model.h" />
+    <ClInclude Include="ElementBufferObject.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Файлы заголовков">

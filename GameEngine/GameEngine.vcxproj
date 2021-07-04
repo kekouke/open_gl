@@ -150,6 +150,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="ElementBufferObject.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Input.cpp" />
@@ -163,6 +164,7 @@
     <ClCompile Include="VertexBufferObject.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ElementBufferObject.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="include\Camera.h" />
     <ClInclude Include="include\mat2.h" />
